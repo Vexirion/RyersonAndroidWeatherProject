@@ -2,6 +2,6 @@
     <string name="app_name">OpenWeatherApp</string>
     <string name="celsius">°C</string>
     <string name="fahrenheit">°F</string>
-    <string name="apikey">&amp;appid=9b2d4f11a01770ebfa7b357d727096e1</string>
+    <string name="apikey">&amp;appid=</string>
     <string name="apisample">http://api.openweathermap.org/data/2.5/weather?id=2172797&amp;units=metric</string>
 </resources>

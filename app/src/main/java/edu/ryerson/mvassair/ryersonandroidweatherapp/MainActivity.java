@@ -2,6 +2,7 @@ package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,7 +17,9 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
     LinearLayout weatherLine;
-    LinearLayout weatherList;
+    RecyclerView weatherList;
+    RecyclerView.Adapter recycleAdapter;
+    RecyclerView.LayoutManager recycleMan;
     View separator;
     OWMHandler owm;
     RequestQueue queue;
@@ -34,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         weatherLine = findViewById(R.id.WeatherLine);
         weatherList = findViewById(R.id.WeatherList);
         separator = findViewById(R.id.separator);
+
+        weatherList.setHasFixedSize(true);
+        recycleMan = weatherList.getLayoutManager();
+        recycleAdapter = weatherList.getAdapter();
+
+        weatherList.setLayoutManager(recycleMan);
+        weatherList.setAdapter(recycleAdapter);
 
         owm.makeRequest(getString(R.string.apisample) + getString(R.string.apikey), queue);
 
