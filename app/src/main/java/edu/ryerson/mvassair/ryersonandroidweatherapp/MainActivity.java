@@ -2,11 +2,11 @@ package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -14,15 +14,17 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
-    LinearLayout weatherLine;
     RecyclerView weatherList;
     RecyclerView.Adapter recycleAdapter;
     RecyclerView.LayoutManager recycleMan;
     View separator;
     OWMHandler owm;
     RequestQueue queue;
+    ArrayList<WeatherData> weatherData;
 
     //Example request URL "http://samples.openweathermap.org/data/2.5/weather?id=2172797&units=metric&appid=b6907d289e10d714a6e88b30761fae22"
 
@@ -31,30 +33,70 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Set up Volley
         owm = new OWMHandler(this);
         queue = Volley.newRequestQueue(this);
 
-        weatherLine = findViewById(R.id.WeatherLine);
+        //Set up RecyclerView
         weatherList = findViewById(R.id.WeatherList);
-        separator = findViewById(R.id.separator);
-
         weatherList.setHasFixedSize(true);
-        recycleMan = weatherList.getLayoutManager();
-        recycleAdapter = weatherList.getAdapter();
-
+        recycleMan = new LinearLayoutManager(this);
+        recycleAdapter = new WeatherAdapter(weatherData); //Data is initially empty
         weatherList.setLayoutManager(recycleMan);
         weatherList.setAdapter(recycleAdapter);
 
+        //owm.makeRequest will populate weatherData
         owm.makeRequest(getString(R.string.apisample) + getString(R.string.apikey), queue);
-
-
-        addNewLines (13);
 
     }
 
     //Called by the OWMHandler when a response is gotten
+    //This section will need to be modified once RecyclerView is implemented
     protected void sendData(JSONObject data){
-        //Inflate a new line from the template
+
+        WeatherData dataline = null;
+
+
+        //Grab the info we need out of the OWM response, pack it together, and put it in the data set
+        try{
+            int temp = (int)data.getJSONObject("main").getDouble("temp");
+            String loc = data.getString("name");
+            int id = data.getJSONArray("weather").getJSONObject(0).getInt("id");
+
+            if (id >= 200 && id < 300) //Thunderstorm
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.THUNDER);
+
+            else if (id >= 300 && id  < 600) //Drizzle and Rain. Something may be added to the 400 range eventually
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.RAIN);
+
+            else if (id >= 600 && id < 700) //Fog or other atmospheric conditions
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.FOG);
+
+            else if (id == 800 || id == 801)
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.SUN);
+
+            else if (id > 801)
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.CLOUDS);
+
+            else{
+                dataline = new WeatherData(loc, temp, true, WeatherCondition.OTHER);
+                System.out.println("An unrecognized weather ID was received: " + id);
+            }
+
+        }catch(JSONException e){
+            System.out.println("One or more JSON keys were not found.\n" + e.getMessage());
+        } finally{
+            if (dataline != null) {
+                weatherData.add(dataline);
+                recycleAdapter.notifyItemInserted(weatherData.size()-1);
+            }
+            else
+                System.out.println("Something somewhere along the lime broke, and you need to fix it");
+        }
+
+
+
+        /*//Inflate a new line from the template
         View newline = LayoutInflater.from(this).inflate(R.layout.weatherline, weatherList, false);
         try {
             //Get the components of the weather line
@@ -63,16 +105,16 @@ public class MainActivity extends AppCompatActivity {
             TextView loc_text = newline.findViewById(R.id.Location);
             //Set the weather line info based on JSON received
             weather_image.setImageResource(R.drawable.ic_placeholder_cloud);
-            line_text.setText("Current temperature: " + (int)data.getJSONObject("main").getDouble("temp") + getString(R.string.celsius));
-            loc_text.setText(data.getString("name"));
+            line_text.setText("Current temperature: " + (int)weatherData.getJSONObject("main").getDouble("temp") + getString(R.string.celsius));
+            loc_text.setText(weatherData.getString("name"));
         }catch(JSONException e){
             System.out.println("JSON Key not found... probably\n" + e.getMessage());
         }
-        weatherList.addView(newline);
+        weatherList.addView(newline);*/
     }
 
     //test function
-    private void addNewLines(int amnt){
+    /*private void addNewLines(int amnt){
 
         for (int i = 0; i < amnt; i++){
 
@@ -89,5 +131,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-    }
+    }*/
 }

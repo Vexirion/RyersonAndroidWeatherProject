@@ -23,8 +23,8 @@ class OWMHandler {
         //Volley JSON Array request. parameters are: HTTP type, URL to access, JSON to send with request, Response listener, Error listener
         req = new JsonObjectRequest(Request.Method.GET, urlsrc, null, new Response.Listener<JSONObject>(){
             public void onResponse(JSONObject response){
-                checkJSON(response);
-                parent.sendData(response);
+                if(checkJSON(response))
+                    parent.sendData(response);
             }
         }, new Response.ErrorListener(){
             public void onErrorResponse (VolleyError error){
@@ -38,12 +38,16 @@ class OWMHandler {
 
     //It looks like Volley already automatically parses all the JSON into dicts and values
     //So we just have to use them as-is. This function currently exists to be a breakpoint for debugger inspection
-    private void checkJSON(JSONObject JSON){
+    private boolean checkJSON(JSONObject JSON){
 
-        if (JSON.has("error"))
+        if (JSON.has("error")) {
             System.out.println("An HTTP error occurred");
-        else
-            System.out.println("JSON has already been parsed into JSONObjects and appropriate data types");
+            return false;
+        }
+        else {
+            System.out.println("JSON has already been parsed into JSONObjects and appropriate weatherData types");
+            return true;
+        }
     }
 
 
@@ -62,7 +66,7 @@ weather (more info Weather condition codes)
 base Internal parameter
 main
     main.temp Temperature. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
-    main.pressure Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa
+    main.pressure Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level weatherData), hPa
     main.humidity Humidity, %
     main.temp_min Minimum temperature at the moment. This is deviation from current temp that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
     main.temp_max Maximum temperature at the moment. This is deviation from current temp that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
@@ -77,7 +81,7 @@ rain
     rain.3h Rain volume for the last 3 hours
 snow
     snow.3h Snow volume for the last 3 hours
-dt Time of data calculation, unix, UTC
+dt Time of weatherData calculation, unix, UTC
 sys
     sys.type Internal parameter
     sys.id Internal parameter
