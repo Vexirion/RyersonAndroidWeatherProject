@@ -2,17 +2,17 @@ package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
-    ArrayList<WeatherData> weatherdata;
+    ArrayList<DBWeatherInfo> weatherdata;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,7 +29,7 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
         }
     }
 
-    public WeatherAdapter (ArrayList<WeatherData> weather){
+    public WeatherAdapter (ArrayList<DBWeatherInfo> weather){
         weatherdata = weather;
     }
 
@@ -43,11 +43,11 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
     //This will populate weatherData in the passed ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position){
-        WeatherData data = weatherdata.get(position);
+        DBWeatherInfo data = weatherdata.get(position);
 
         holder.location.setText(data.location);
-        holder.weather.setText(data.temperature);
-        switch(data.condition){
+        holder.weather.setText(String.format(Locale.CANADA, "%f",data.temperature));
+        switch(data.category){
             case SUN:
                 holder.icon.setImageResource(R.drawable.ic_placeholder_sun);
                 break;

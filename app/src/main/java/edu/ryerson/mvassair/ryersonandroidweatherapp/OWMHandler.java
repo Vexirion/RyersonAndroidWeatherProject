@@ -11,7 +11,7 @@ class OWMHandler {
     MainActivity parent;
 
 
-    public OWMHandler(MainActivity parent){
+    OWMHandler(MainActivity parent){
         req = null;
         this.parent = parent;
     }

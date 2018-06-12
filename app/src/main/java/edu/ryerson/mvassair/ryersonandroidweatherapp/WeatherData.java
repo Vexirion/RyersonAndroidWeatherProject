@@ -1,23 +1,26 @@
 package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
+import java.sql.Timestamp;
+
 class WeatherData {
 
     String location;
-    int temperature;
-    boolean celsius;
+    double temperature;
+    Timestamp lastupdate;
     WeatherCondition condition;
+    int id;
 
     WeatherData(){
         location = "Placeholder";
-        temperature = 25;
-        celsius = true;
+        temperature = 25;;
         condition = WeatherCondition.SUN;
+        id = 0;
     }
 
-    WeatherData(String loc, int temp, boolean cel, WeatherCondition con){
+    WeatherData(String loc, int temp, WeatherCondition con, Timestamp time){
         location = loc;
         temperature = temp;
-        celsius = cel;
+        lastupdate = time;
         condition = con;
     }
 
