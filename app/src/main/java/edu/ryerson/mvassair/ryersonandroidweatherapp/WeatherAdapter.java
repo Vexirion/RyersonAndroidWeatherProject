@@ -12,24 +12,22 @@ import java.util.Locale;
 
 class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
-    ArrayList<DBWeatherInfo> weatherdata;
+    private ArrayList<DBWeatherInfo> weatherdata;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public LinearLayout weatherline;
         public TextView location;
-        public TextView weather;
+        TextView weather;
         public ImageView icon;
-        public ViewHolder(LinearLayout v){
+        ViewHolder(LinearLayout v){
             super(v);
-            weatherline = v;
             location = v.findViewById(R.id.Location);
             weather = v.findViewById(R.id.WeatherString);
             icon = v.findViewById(R.id.WeatherImage);
         }
     }
 
-    public WeatherAdapter (ArrayList<DBWeatherInfo> weather){
+    WeatherAdapter (ArrayList<DBWeatherInfo> weather){
         weatherdata = weather;
     }
 

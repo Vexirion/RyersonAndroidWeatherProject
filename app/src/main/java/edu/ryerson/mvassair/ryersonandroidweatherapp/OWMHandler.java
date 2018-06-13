@@ -2,20 +2,19 @@ package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
-
 import org.json.JSONObject;
 
-class OWMHandler {
+class OWMHandler{
 
-    JsonObjectRequest req;
+    private JsonObjectRequest req;
     MainActivity parent;
-
 
     OWMHandler(MainActivity parent){
         req = null;
         this.parent = parent;
     }
 
+    //Volley is automatically threaded out for you, so you don't need to fiddle with AsyncTasks
     protected void makeRequest(String urlsrc, RequestQueue queue){
 
         System.out.println(urlsrc);
@@ -28,12 +27,11 @@ class OWMHandler {
             }
         }, new Response.ErrorListener(){
             public void onErrorResponse (VolleyError error){
-                System.out.println(error.getCause());
+                error.printStackTrace();
             }
         });
 
         queue.add(req);
-
     }
 
     //It looks like Volley already automatically parses all the JSON into dicts and values

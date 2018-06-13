@@ -12,9 +12,9 @@ class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
     private ArrayList<DBLocation> updatelocs;
     private ArrayList<DBWeatherInfo> weatherupdate;
 
-    public DBOps(WeatherDB db){
+    DBOps(WeatherDB db){
         this.db = db;
-     }
+    }
 
     protected ArrayList doInBackground(WeatherData... data){
         ArrayList arr = new ArrayList<>();

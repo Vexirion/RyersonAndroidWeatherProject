@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SettingsActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -16,20 +16,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <include
-            android:layout_alignParentTop="true"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar"
-            />
+            <include
+                android:layout_alignParentTop="true"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar"
+                />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:id="@+id/WeatherList"
+            android:id="@+id/LocationList"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 

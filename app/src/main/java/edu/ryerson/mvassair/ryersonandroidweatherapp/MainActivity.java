@@ -1,20 +1,17 @@
 package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Button;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -28,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
     OWMHandler owm;
     RequestQueue queue;
     ArrayList<DBWeatherInfo> weatherData;
-    ArrayList<DBLocation> locations;
-    WeatherDB DB;
+    public static ArrayList<DBLocation> locations;
+    public WeatherDB DB;
+    Button settings;
 
     //Example request URL "http://samples.openweathermap.org/data/2.5/weather?id=2172797&units=metric&appid=b6907d289e10d714a6e88b30761fae22"
 
@@ -65,13 +63,12 @@ public class MainActivity extends AppCompatActivity {
         operator2.setReadMode(DBOP.LOCREADALL);
         operator2.execute();
         try{
-            ArrayList L = operator.get();
+            ArrayList L = operator2.get();
             if (L.get(0) instanceof DBLocation)
                 locations = new ArrayList<DBLocation>(L);
             else
                 System.out.println("Could not get Locations from DB");
         }catch (ExecutionException | InterruptedException e){e.printStackTrace();}
-
 
         //Set up RecyclerView
         weatherList = findViewById(R.id.WeatherList);
@@ -81,6 +78,19 @@ public class MainActivity extends AppCompatActivity {
         weatherList.setLayoutManager(recycleMan);
         weatherList.setAdapter(recycleAdapter);
         recycleAdapter.notifyDataSetChanged();
+
+        settings = findViewById(R.id.settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Settings button was clicked");
+                if (!MainActivity.locations.isEmpty()){
+                    Intent i = new Intent(getBaseContext(), SettingsActivity.class);
+                    startActivity(i);
+                } else
+                    System.out.println("Locations list is empty!");
+            }
+        });
 
         //owm.makeRequest will populate weatherData with fresh OWM data
         //owm.makeRequest(getString(R.string.apisample) + getString(R.string.apikey), queue);
@@ -136,43 +146,5 @@ public class MainActivity extends AppCompatActivity {
             if (dataline == null)
                 System.out.println("Something somewhere along the lime broke, and you need to fix it");
         }
-
-
-
-        /*//Inflate a new line from the template
-        View newline = LayoutInflater.from(this).inflate(R.layout.weatherline, weatherList, false);
-        try {
-            //Get the components of the weather line
-            ImageView weather_image = newline.findViewById(R.id.WeatherImage);
-            TextView line_text = newline.findViewById(R.id.WeatherString);
-            TextView loc_text = newline.findViewById(R.id.Location);
-            //Set the weather line info based on JSON received
-            weather_image.setImageResource(R.drawable.ic_placeholder_cloud);
-            line_text.setText("Current temperature: " + (int)weatherData.getJSONObject("main").getDouble("temp") + getString(R.string.celsius));
-            loc_text.setText(weatherData.getString("name"));
-        }catch(JSONException e){
-            System.out.println("JSON Key not found... probably\n" + e.getMessage());
-        }
-        weatherList.addView(newline);*/
     }
-
-    //test function
-    /*private void addNewLines(int amnt){
-
-        for (int i = 0; i < amnt; i++){
-
-            View newline = LayoutInflater.from(this).inflate(R.layout.weatherline, weatherList, false);
-
-            ImageView weather_image = newline.findViewById(R.id.WeatherImage);
-            TextView line_text = newline.findViewById(R.id.WeatherString);
-            TextView loc_text = newline.findViewById(R.id.Location);
-            weather_image.setImageResource(R.drawable.ic_placeholder_rain);
-            line_text.setText("This is loop #" + i);
-            loc_text.setText("Location" + i);
-
-            weatherList.addView(newline);
-
-        }
-
-    }*/
 }
