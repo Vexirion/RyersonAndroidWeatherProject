@@ -34,6 +34,7 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
     }
 
     //You can fill in some placeholder weatherData here if you like
+    @Override
     public WeatherAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewtype){
         LinearLayout v = (LinearLayout)
                 LayoutInflater.from (parent.getContext()).inflate(R.layout.weatherline, parent, false);
@@ -72,7 +73,7 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
     }
 
     public int getItemCount(){
-        return weatherdata.size()-1;
+        return weatherdata.size();
     }
 
 }

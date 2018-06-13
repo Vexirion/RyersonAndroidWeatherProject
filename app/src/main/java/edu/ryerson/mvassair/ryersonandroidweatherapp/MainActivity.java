@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView weatherList;
-    RecyclerView.Adapter recycleAdapter;
+    WeatherAdapter recycleAdapter;
     RecyclerView.LayoutManager recycleMan;
     View separator;
     OWMHandler owm;
@@ -29,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<DBWeatherInfo> weatherData;
     ArrayList<DBLocation> locations;
     WeatherDB DB;
-    DBOps operator;
 
     //Example request URL "http://samples.openweathermap.org/data/2.5/weather?id=2172797&units=metric&appid=b6907d289e10d714a6e88b30761fae22"
 
@@ -45,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Set up DB and data holders
         DB = new WeatherDB(this);
-        operator = new DBOps(DB);
         weatherData = new ArrayList<>();
         locations = new ArrayList<>();
 
         //Pull Weather info from DB
+        DBOps operator = new DBOps(DB);
         operator.setReadMode(DBOP.DATAREAD);
         operator.execute();
         try {
@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
         }catch(ExecutionException | InterruptedException e){e.printStackTrace();}
 
         //pull location info from DB
-        operator.setReadMode(DBOP.LOCREADALL);
-        operator.execute();
+        DBOps operator2 = new DBOps(DB);
+        operator2.setReadMode(DBOP.LOCREADALL);
+        operator2.execute();
         try{
             ArrayList L = operator.get();
             if (L.get(0) instanceof DBLocation)
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         recycleAdapter = new WeatherAdapter(weatherData); //Data is initially empty
         weatherList.setLayoutManager(recycleMan);
         weatherList.setAdapter(recycleAdapter);
-
+        recycleAdapter.notifyDataSetChanged();
 
         //owm.makeRequest will populate weatherData with fresh OWM data
         //owm.makeRequest(getString(R.string.apisample) + getString(R.string.apikey), queue);
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.SUN, time, loc);
             else if (id > 801) //Cloudy
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.CLOUDS, time, loc);
-            else{
+            else{ //anything else
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.OTHER, time, loc);
                 System.out.println("An unrecognized weather ID was received: " + id);
             }

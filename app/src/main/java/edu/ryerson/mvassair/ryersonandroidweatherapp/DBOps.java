@@ -16,7 +16,7 @@ class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
         this.db = db;
      }
 
-    protected ArrayList<?> doInBackground(WeatherData... data){
+    protected ArrayList doInBackground(WeatherData... data){
         ArrayList arr = new ArrayList<>();
 
         switch(mode){

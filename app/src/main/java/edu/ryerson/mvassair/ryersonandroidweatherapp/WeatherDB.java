@@ -81,7 +81,6 @@ class WeatherDB {
 
 
         String query = String.format("Select * from %s", DBWeatherInfo.Table);
-
         Cursor c = db.rawQuery(query, null);
         if (c.moveToFirst()){
             do{
