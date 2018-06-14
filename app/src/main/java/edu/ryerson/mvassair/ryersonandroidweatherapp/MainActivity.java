@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             int temp = (int)data.getJSONObject("main").getDouble("temp");
             String loc = data.getString("name");
             int condition = data.getJSONArray("weather").getJSONObject(0).getInt("id");
-            Timestamp time = new Timestamp(data.getLong("dt"));
+            Timestamp time = new Timestamp(data.getLong("dt")*1000);
             int id = data.getInt("id");
 
             //OpenWeatherMap represents weather conditions with ranges of IDs based on categories
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             //If the weather data we got is already in the list, update it and return
             for (DBWeatherInfo w : weatherData){
                 if (dataline.id == w.id){
-                    w = dataline;
+                    weatherData.set(weatherData.indexOf(w), dataline);
                     recycleAdapter.notifyDataSetChanged();
                     return;
                 }
