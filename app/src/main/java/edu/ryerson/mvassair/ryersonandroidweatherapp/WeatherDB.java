@@ -25,7 +25,7 @@ class WeatherDB {
             vals.put(DBLocation.KEY_NAME, d.name);
             vals.put(DBLocation.KEY_COUNTRY, d.country);
             vals.put(DBLocation.KEY_SELECTED, d.selected);
-            updated += db.update(DBLocation.Table, vals, "?=?", new String[]{DBLocation.KEY_ID, Integer.toString(d.id)});
+            updated += db.insertWithOnConflict(DBLocation.Table,null, vals, SQLiteDatabase.CONFLICT_REPLACE);
         }
         db.close();
         return updated;
@@ -42,7 +42,7 @@ class WeatherDB {
             vals.put(DBWeatherInfo.KEY_LASTUPDATE, d.lastupdate.toString());
             vals.put(DBWeatherInfo.KEY_CATEGORY, d.category.ordinal());
             vals.put(DBWeatherInfo.KEY_LOCATION, d.location);
-            updated += db.update(DBWeatherInfo.Table, vals, "?=?", new String[]{DBWeatherInfo.KEY_ID, Integer.toString(d.id)});
+            updated += db.insertWithOnConflict(DBWeatherInfo.Table, null,vals, SQLiteDatabase.CONFLICT_REPLACE);
         }
         db.close();
         return updated;

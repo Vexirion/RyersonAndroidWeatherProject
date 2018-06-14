@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 //it would probably be beneficial to split this into a DBReader and a DBWriter class
 //so I can return useful data easier on writes, but I don't really care about that right now.
-class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
+class DBOps extends AsyncTask <DBWeatherInfo, Void, ArrayList> {
 
     private WeatherDB db;
     private DBOP mode;
@@ -16,7 +16,7 @@ class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
         this.db = db;
     }
 
-    protected ArrayList doInBackground(WeatherData... data){
+    protected ArrayList doInBackground(DBWeatherInfo... data){
         ArrayList arr = new ArrayList<>();
 
         switch(mode){
@@ -31,11 +31,9 @@ class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
                 break;
             case LOCUPDATE:
                 db.updateTrack(updatelocs);
-                updatelocs.clear();
                 break;
             case DATAUPDATE:
                 db.updateWeather(weatherupdate);
-                weatherupdate.clear();
                 break;
         }
         return arr;
@@ -45,13 +43,15 @@ class DBOps extends AsyncTask <WeatherData, Void, ArrayList> {
         mode = op;
     }
 
+    @SuppressWarnings("unchecked")
     void setLocUpdate(ArrayList<DBLocation> locs){
-        updatelocs = locs;
+        updatelocs = (ArrayList<DBLocation>)locs.clone();
         mode = DBOP.LOCUPDATE;
     }
 
+    @SuppressWarnings("unchecked")
     void setWeatherUpdate(ArrayList<DBWeatherInfo> info){
-        weatherupdate = info;
+        weatherupdate = (ArrayList<DBWeatherInfo>)info.clone();
         mode = DBOP.DATAUPDATE;
     }
 }

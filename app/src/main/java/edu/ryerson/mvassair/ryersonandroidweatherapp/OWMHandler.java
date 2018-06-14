@@ -2,7 +2,11 @@ package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
+
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 class OWMHandler{
 
@@ -15,40 +19,45 @@ class OWMHandler{
     }
 
     //Volley is automatically threaded out for you, so you don't need to fiddle with AsyncTasks
-    protected void makeRequest(String urlsrc, RequestQueue queue){
+    protected void makeRequest(String urlsrc, RequestQueue queue, ArrayList<Integer> IDs){
 
-        System.out.println(urlsrc);
+        for(int id : IDs) {
+            String urlfinal = String.format(urlsrc, id);
+            System.out.println(urlfinal);
 
-        //Volley JSON Array request. parameters are: HTTP type, URL to access, JSON to send with request, Response listener, Error listener
-        req = new JsonObjectRequest(Request.Method.GET, urlsrc, null, new Response.Listener<JSONObject>(){
-            public void onResponse(JSONObject response){
-                if(checkJSON(response))
-                    parent.sendData(response);
-            }
-        }, new Response.ErrorListener(){
-            public void onErrorResponse (VolleyError error){
-                error.printStackTrace();
-            }
-        });
+            //Volley JSON Array request. parameters are: HTTP type, URL to access, JSON to send with request, Response listener, Error listener
+            req = new JsonObjectRequest(Request.Method.GET, urlfinal, null, new Response.Listener<JSONObject>() {
+                public void onResponse(JSONObject response) {
+                    if (checkJSON(response))
+                        parent.sendData(response);
+                }
+            }, new Response.ErrorListener() {
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            });
 
-        queue.add(req);
+            queue.add(req);
+        }
     }
 
     //It looks like Volley already automatically parses all the JSON into dicts and values
     //So we just have to use them as-is. This function currently exists to be a breakpoint for debugger inspection
     private boolean checkJSON(JSONObject JSON){
 
-        if (JSON.has("error")) {
-            System.out.println("An HTTP error occurred");
-            return false;
-        }
-        else {
-            System.out.println("JSON has already been parsed into JSONObjects and appropriate weatherData types");
-            return true;
-        }
+        try {
+            if (JSON.has("error")) {
+                return false;
+            }
+            else if (JSON.has ("cod") && JSON.getInt("cod") == 429){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }catch (JSONException j){}
+    return false; //If the Try fails, something went horribly wrong. We probably didn't receive JSON somehow
     }
-
-
 }
 
 

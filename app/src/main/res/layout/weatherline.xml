@@ -13,17 +13,17 @@
     <TextView
         android:id="@+id/Location"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
+        android:layout_height="match_parent"
         android:layout_weight="0.3"
+        android:gravity="center"
         android:text=""/>
 
     <TextView
         android:id="@+id/WeatherString"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.5"
-        android:textAlignment="center"
+        android:gravity="center"
         android:text=""/>
 
     <ImageView
@@ -38,5 +38,4 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>
-
 </LinearLayout>

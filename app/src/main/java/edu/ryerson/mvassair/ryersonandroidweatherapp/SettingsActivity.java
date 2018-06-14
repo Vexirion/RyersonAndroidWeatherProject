@@ -9,10 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -31,6 +33,12 @@ public class SettingsActivity extends AppCompatActivity {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DBOps save = new DBOps(MainActivity.DB);
+                save.setLocUpdate(MainActivity.locations);
+                save.execute();
+                try{
+                    System.out.println(save.get() + "\n");
+                }catch(ExecutionException | InterruptedException e){e.printStackTrace();}
                 startActivity(new Intent(getBaseContext(), MainActivity.class));
             }
         });
@@ -70,28 +78,20 @@ public class SettingsActivity extends AppCompatActivity {
             holder.itemView.setVisibility(View.INVISIBLE);
             holder.sw.setText(String.format("%s, %s", loc.name, loc.country));
 
-            if(loc.selected < 0) {
-                holder.sw.toggle();
+            if(loc.selected > 0) {
+                holder.sw.setChecked(true);
             }
             else {
                 holder.sw.setChecked(false);
             }
-            holder.sw.setOnClickListener(new View.OnClickListener() {
+
+            holder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    Switch sw = (Switch)v;
-                    if(sw.isChecked()) {
-                        sw.toggle();
-                        loc.selected = 0;
-                    }
-                    else {
-                        sw.toggle();
-                        loc.selected = 1;
-                    }
+                public void onCheckedChanged(CompoundButton b, boolean checked) {
+                    loc.selected = loc.selected > 0? 0:1;
                 }
             });
             holder.itemView.setVisibility(View.VISIBLE);
         }
         public int getItemCount(){ return locations.size();}
 }
-
