@@ -19,6 +19,7 @@ class DBWeatherInfo {
     public WeatherCondition category;
     public Timestamp lastupdate;
     public String location;
+    public  String country = "";
 
 
     public DBWeatherInfo(){

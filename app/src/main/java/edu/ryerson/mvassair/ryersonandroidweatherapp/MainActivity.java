@@ -70,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             ArrayList<DBWeatherInfo> L = operator.get();
             ArrayList<DBWeatherInfo> toRemove = new ArrayList<>();
-            if (L.get(0) != null && weatherData.isEmpty())
+            if (L != null && weatherData.isEmpty())
                 weatherData = new ArrayList<>(L);
-            if(L.get(0) != null && !weatherData.isEmpty()){
+            if(L != null && !weatherData.isEmpty()){
                 for(DBWeatherInfo OLD: weatherData){
                     for(DBWeatherInfo NEW: L){ //This will probably never come up, but it doesn't hurt to check if the DB somehow has newer information
                         if(OLD.id == NEW.id && NEW.lastupdate.getTime() > OLD.lastupdate.getTime()) {

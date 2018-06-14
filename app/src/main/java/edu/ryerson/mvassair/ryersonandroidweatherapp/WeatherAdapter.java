@@ -44,8 +44,8 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position){
         DBWeatherInfo data = weatherdata.get(position);
 
-        holder.location.setText(data.location);
-        holder.weather.setText(String.format(Locale.CANADA, "%f",data.temperature));
+        holder.location.setText(String.format("%s",data.location));
+        holder.weather.setText(String.format(Locale.CANADA, "%.2f°C",data.temperature));
         switch(data.category){
             case SUN:
                 holder.icon.setImageResource(R.drawable.ic_placeholder_sun);
