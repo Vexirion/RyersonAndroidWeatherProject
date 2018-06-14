@@ -2,5 +2,5 @@
 <resources>
     <string name="app_name">OpenWeatherApp</string>
     <string name="APIURL">http://api.openweathermap.org/data/2.5/weather?units=metric&amp;id=%d&amp;APPID=</string>
-    <string name="APPID">f7ec70f251591e8b9d3f0c709f3807ca</string>
+    <string name="APPID">********************************</string>
 </resources>
