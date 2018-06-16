@@ -1,23 +1,26 @@
 package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import android.os.AsyncTask;
+import android.util.SparseArray;
+
+import java.net.SocketAddress;
 import java.util.ArrayList;
 
 //it would probably be beneficial to split this into a DBReader and a DBWriter class
 //so I can return useful data easier on writes, but I don't really care about that right now.
-class DBOps extends AsyncTask <DBWeatherInfo, Void, ArrayList> {
+class DBOps extends AsyncTask <Integer, Void, SparseArray> {
 
     private WeatherDB db;
     private DBOP mode;
-    private ArrayList<DBLocation> updatelocs;
-    private ArrayList<DBWeatherInfo> weatherupdate;
+    private SparseArray<DBLocation> updatelocs;
+    private SparseArray<DBWeatherInfo> weatherupdate;
 
     DBOps(WeatherDB db){
         this.db = db;
     }
 
-    protected ArrayList doInBackground(DBWeatherInfo... data){
-        ArrayList arr = new ArrayList<>();
+    protected SparseArray doInBackground(Integer... ids){
+        SparseArray arr = new SparseArray<>();
 
         switch(mode){
             case LOCREADTRACK:
@@ -30,10 +33,10 @@ class DBOps extends AsyncTask <DBWeatherInfo, Void, ArrayList> {
                 arr = db.getSavedWeather();
                 break;
             case LOCUPDATE:
-                db.updateTrack(updatelocs);
+                db.updateTrack(ids);
                 break;
             case DATAUPDATE:
-                db.updateWeather(weatherupdate);
+                db.updateWeather(ids);
                 break;
         }
         return arr;
@@ -44,14 +47,14 @@ class DBOps extends AsyncTask <DBWeatherInfo, Void, ArrayList> {
     }
 
     @SuppressWarnings("unchecked")
-    void setLocUpdate(ArrayList<DBLocation> locs){
-        updatelocs = (ArrayList<DBLocation>)locs.clone();
+    void setLocUpdate(SparseArray<DBLocation> locs){
+        updatelocs = locs.clone();
         mode = DBOP.LOCUPDATE;
     }
 
     @SuppressWarnings("unchecked")
-    void setWeatherUpdate(ArrayList<DBWeatherInfo> info){
-        weatherupdate = (ArrayList<DBWeatherInfo>)info.clone();
+    void setWeatherUpdate(SparseArray<DBWeatherInfo> info){
+        weatherupdate = info.clone();
         mode = DBOP.DATAUPDATE;
     }
 }

@@ -8,8 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -17,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView.LayoutManager recycleMan;
     OWMHandler owm;
     RequestQueue queue;
-    public static ArrayList<DBWeatherInfo> weatherData;
-    public static ArrayList<DBLocation> locations;
+    public static SparseArray<DBWeatherInfo> weatherData;
+    public static SparseArray<DBLocation> locations;
     public static WeatherDB DB;
     Button settings;
 
@@ -47,18 +50,17 @@ public class MainActivity extends AppCompatActivity {
         DB = new WeatherDB(this);
         //Because these values may persist through other activities being opened, check these to see if they exist before initializing them
         if (weatherData == null)
-            weatherData = new ArrayList<>();
+            weatherData = new SparseArray<>();
         if(locations == null)
-            locations = new ArrayList<>();
+            locations = new SparseArray<>();
 
-        //pull location info from DB
         DBOps operator2 = new DBOps(DB);
         operator2.setReadMode(DBOP.LOCREADALL);
         operator2.execute();
         try{
-            ArrayList<DBLocation> L = operator2.get();
+            SparseArray<DBLocation> L = operator2.get();
             if (L.get(0) != null)
-                locations = new ArrayList<>(L);
+                locations = L;
             else
                 System.out.println("Could not get Locations from DB");
         }catch (ExecutionException | InterruptedException e){e.printStackTrace();}
@@ -68,11 +70,11 @@ public class MainActivity extends AppCompatActivity {
         operator.setReadMode(DBOP.DATAREAD);
         operator.execute();
         try {
-            ArrayList<DBWeatherInfo> L = operator.get();
+            SparseArray<DBWeatherInfo> L = operator.get();
             ArrayList<DBWeatherInfo> toRemove = new ArrayList<>();
-            if (L != null && weatherData.isEmpty())
-                weatherData = new ArrayList<>(L);
-            if(L != null && !weatherData.isEmpty()){
+            if (L != null && weatherData.size() == 0)
+                weatherData = L;
+            if(L != null && weatherData.size() != 0){
                 for(DBWeatherInfo OLD: weatherData){
                     for(DBWeatherInfo NEW: L){ //This will probably never come up, but it doesn't hurt to check if the DB somehow has newer information
                         if(OLD.id == NEW.id && NEW.lastupdate.getTime() > OLD.lastupdate.getTime()) {
@@ -82,10 +84,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     for(DBLocation loc : locations){
                         if(loc.id == OLD.id && loc.selected < 1) //If we have weather data for a location, and it isn't being tracked anymore, remove it
-                            toRemove.add(OLD);
+                            weatherData.remove(OLD.id);
                     }
                 }
-                weatherData.removeAll(toRemove);
             }
             else
                 System.out.println("Could not get Weather data from DB");
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!MainActivity.locations.isEmpty()){
+                if (MainActivity.locations.size() != 0){
                     Intent i = new Intent(getBaseContext(), SettingsActivity.class);
                     startActivity(i);
                 }
@@ -139,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
             //owm.makeRequest will populate weatherData with fresh OWM data
             owm.makeRequest(getString(R.string.APIURL) + getString(R.string.APPID), queue, IDs);
         }
+        else
+            Toast.makeText(this, "No network available", Toast.LENGTH_LONG).show();
     }
 
     //Called by the OWMHandler when a response is gotten
@@ -173,13 +176,13 @@ public class MainActivity extends AppCompatActivity {
             //If the weather data we got is already in the list, update it and return
             for (DBWeatherInfo w : weatherData){
                 if (dataline.id == w.id){
-                    weatherData.set(weatherData.indexOf(w), dataline);
+                    weatherData.put(w.id, dataline);
                     recycleAdapter.notifyDataSetChanged();
                     return;
                 }
             }
             //If we made it through the above loop without returning, the ID we got isn't in the list, so add it
-            weatherData.add(dataline);
+            weatherData.add(id, dataline);
             recycleAdapter.notifyDataSetChanged();
 
         }catch(JSONException e){

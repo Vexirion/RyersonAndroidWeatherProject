@@ -1,6 +1,7 @@
 package edu.ryerson.mvassair.ryersonandroidweatherapp;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -12,8 +13,7 @@ import java.util.Locale;
 
 class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
-    private ArrayList<DBWeatherInfo> weatherdata;
-    private ArrayList<DBLocation> locations;
+    private SparseArray<DBWeatherInfo> weatherdata;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -28,7 +28,7 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
         }
     }
 
-    WeatherAdapter (ArrayList<DBWeatherInfo> weather){
+    WeatherAdapter (SparseArray<DBWeatherInfo> weather){
         weatherdata = weather;
     }
 
@@ -44,7 +44,7 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
     //This will populate weatherData in the passed ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position){
         DBWeatherInfo data = weatherdata.get(position);
-        DBLocation loc = data.locinfo;
+        DBLocation loc = MainActivity.locations.get(position);
         if(loc != null) {
             holder.location.setText(String.format("%s, %s", data.location, loc.country));
             holder.weather.setText(String.format(Locale.CANADA, "%.2f°C", data.temperature));

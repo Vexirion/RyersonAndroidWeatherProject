@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,10 +17,11 @@ class WeatherDB {
         helper = new DBHelper(context);
     }
 
-    public int updateTrack(ArrayList<DBLocation> locations){
+    public int updateTrack(Integer... keys){
         SQLiteDatabase db = helper.getWritableDatabase();
         int updated = 0;
-        for (DBLocation d : locations) {
+        for (int i : keys) {
+            DBLocation d = MainActivity.locations.get(i);
             ContentValues vals = new ContentValues();
             vals.put(DBLocation.KEY_ID, d.id);
             vals.put(DBLocation.KEY_NAME, d.name);
@@ -31,10 +33,11 @@ class WeatherDB {
         return updated;
     }
 
-    public int updateWeather(ArrayList<DBWeatherInfo> weather){
+    public int updateWeather(Integer... ids){
         SQLiteDatabase db = helper.getWritableDatabase();
         int updated = 0;
-        for (DBWeatherInfo d : weather) {
+        for (int i : ids) {
+            DBWeatherInfo d = MainActivity.weatherData.get(i);
             ContentValues vals = new ContentValues();
             vals.put(DBWeatherInfo.KEY_ID, d.id);
             vals.put(DBWeatherInfo.KEY_TEMPERATURE, d.temperature);
@@ -48,8 +51,8 @@ class WeatherDB {
         return updated;
     }
 
-    public ArrayList<DBLocation> getLocations(boolean tracked){
-        ArrayList<DBLocation> locations = new ArrayList<>();
+    public SparseArray<DBLocation> getLocations(boolean tracked){
+        SparseArray<DBLocation> locations = new SparseArray<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         String query;
 
@@ -67,23 +70,16 @@ class WeatherDB {
                 String city = c.getString(c.getColumnIndex(DBLocation.KEY_NAME));
                 String country = c.getString(c.getColumnIndex(DBLocation.KEY_COUNTRY));
                 int selected = c.getInt(c.getColumnIndex(DBLocation.KEY_SELECTED));
-                locations.add(new DBLocation(id, city, country, selected));
+                locations.put(id, new DBLocation(id, city, country, selected));
             }while(c.moveToNext());
             c.close();
         }
-        for(DBLocation l: locations){
-            if (l.selected > 0){
-                l.weather = getSavedWeather(l);
-                l.weather.locinfo = l;
-            }
-        }
-
         db.close();
         return locations;
     }
 
-    public ArrayList<DBWeatherInfo> getSavedWeather(){
-        ArrayList<DBWeatherInfo> weather = new ArrayList<>();
+    public SparseArray<DBWeatherInfo> getSavedWeather(){
+        SparseArray<DBWeatherInfo> weather = new SparseArray<>();
         SQLiteDatabase db = helper.getReadableDatabase();
 
         String query = String.format("Select * from %s", DBWeatherInfo.Table);
@@ -97,7 +93,7 @@ class WeatherDB {
                 Timestamp lastupdate = Timestamp.valueOf(c.getString(c.getColumnIndex(DBWeatherInfo.KEY_LASTUPDATE)));
                 String location = c.getString(c.getColumnIndex(DBWeatherInfo.KEY_LOCATION));
 
-                weather.add(new DBWeatherInfo(id, temp, condid, category, lastupdate, location));
+                weather.put(id, new DBWeatherInfo(id, temp, condid, category, lastupdate, location));
             }while (c.moveToNext());
             c.close();
         }
