@@ -71,6 +71,13 @@ class WeatherDB {
             }while(c.moveToNext());
             c.close();
         }
+        for(DBLocation l: locations){
+            if (l.selected > 0){
+                l.weather = getSavedWeather(l);
+                l.weather.locinfo = l;
+            }
+        }
+
         db.close();
         return locations;
     }
@@ -78,7 +85,6 @@ class WeatherDB {
     public ArrayList<DBWeatherInfo> getSavedWeather(){
         ArrayList<DBWeatherInfo> weather = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
-
 
         String query = String.format("Select * from %s", DBWeatherInfo.Table);
         Cursor c = db.rawQuery(query, null);
@@ -93,6 +99,29 @@ class WeatherDB {
 
                 weather.add(new DBWeatherInfo(id, temp, condid, category, lastupdate, location));
             }while (c.moveToNext());
+            c.close();
+        }
+        db.close();
+        return weather;
+    }
+
+    public DBWeatherInfo getSavedWeather(DBLocation location){
+        DBWeatherInfo weather = new DBWeatherInfo();
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        String query = String.format("Select * from %s where ID=%s", DBWeatherInfo.Table, location.id);
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()){
+            do{
+                int id = c.getInt(c.getColumnIndex(DBWeatherInfo.KEY_ID));
+                double temp = c.getDouble(c.getColumnIndex(DBWeatherInfo.KEY_TEMPERATURE));
+                int condid = c.getInt(c.getColumnIndex(DBWeatherInfo.KEY_CONDITIONID));
+                WeatherCondition category = WeatherCondition.values()[c.getInt(c.getColumnIndex(DBWeatherInfo.KEY_CATEGORY))];
+                Timestamp lastupdate = Timestamp.valueOf(c.getString(c.getColumnIndex(DBWeatherInfo.KEY_LASTUPDATE)));
+                String loc = location.name;
+
+                weather = new DBWeatherInfo(id, temp, condid, category, lastupdate, loc);
+            }while(c.moveToNext());
             c.close();
         }
         db.close();

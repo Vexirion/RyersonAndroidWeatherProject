@@ -13,6 +13,7 @@ import java.util.Locale;
 class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
     private ArrayList<DBWeatherInfo> weatherdata;
+    private ArrayList<DBLocation> locations;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -43,30 +44,32 @@ class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
     //This will populate weatherData in the passed ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position){
         DBWeatherInfo data = weatherdata.get(position);
-
-        holder.location.setText(String.format("%s",data.location));
-        holder.weather.setText(String.format(Locale.CANADA, "%.2f°C",data.temperature));
-        switch(data.category){
-            case SUN:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_sun);
-                break;
-            case RAIN:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_rain);
-                break;
-            case CLOUDS:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_cloud);
-                break;
-            case THUNDER:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_thunder);
-                break;
-            case SNOW:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_snow);
-                break;
-            case FOG:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_fog);
-                break;
-            default:
-                holder.icon.setImageResource(R.drawable.ic_placeholder_warning);
+        DBLocation loc = data.locinfo;
+        if(loc != null) {
+            holder.location.setText(String.format("%s, %s", data.location, loc.country));
+            holder.weather.setText(String.format(Locale.CANADA, "%.2f°C", data.temperature));
+            switch (data.category) {
+                case SUN:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_sun);
+                    break;
+                case RAIN:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_rain);
+                    break;
+                case CLOUDS:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_cloud);
+                    break;
+                case THUNDER:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_thunder);
+                    break;
+                case SNOW:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_snow);
+                    break;
+                case FOG:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_fog);
+                    break;
+                default:
+                    holder.icon.setImageResource(R.drawable.ic_placeholder_warning);
+            }
         }
     }
 

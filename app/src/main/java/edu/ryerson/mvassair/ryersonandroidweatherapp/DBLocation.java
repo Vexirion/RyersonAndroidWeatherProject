@@ -12,6 +12,7 @@ class DBLocation {
     public String name;
     public String country;
     public int selected;
+    DBWeatherInfo weather;
 
     public DBLocation(int id, String name, String country, int selected){
         this.id = id;

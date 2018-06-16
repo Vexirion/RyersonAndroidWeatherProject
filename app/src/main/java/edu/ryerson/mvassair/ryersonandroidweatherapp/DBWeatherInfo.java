@@ -19,15 +19,14 @@ class DBWeatherInfo {
     public WeatherCondition category;
     public Timestamp lastupdate;
     public String location;
-    public  String country = "";
-
+    DBLocation locinfo;
 
     public DBWeatherInfo(){
         id = 0;
         temperature = 0;
         conditionid = 0;
         category = WeatherCondition.OTHER;
-        lastupdate.setTime(0);
+        lastupdate = new Timestamp(0);
         location = "Placeholder";
     }
 
