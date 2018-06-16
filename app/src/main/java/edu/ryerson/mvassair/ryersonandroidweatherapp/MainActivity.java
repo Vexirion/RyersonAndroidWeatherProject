@@ -156,15 +156,15 @@ public class MainActivity extends AppCompatActivity {
             int id = data.getInt("id");
 
             //OpenWeatherMap represents weather conditions with ranges of IDs based on categories
-            if (id >= 200 && id < 300) //Thunderstorm
+            if (condition >= 200 && condition < 300) //Thunderstorm
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.THUNDER, time, loc);
-            else if (id >= 300 && id  < 600) //Drizzle and Rain. Something may be added to the 400 range eventually
+            else if (condition >= 300 && condition  < 600) //Drizzle and Rain. Something may be added to the 400 range eventually
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.RAIN, time, loc);
-            else if (id >= 600 && id < 700) //Fog or other atmospheric conditions
+            else if (condition >= 600 && condition < 700) //Fog or other atmospheric conditions
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.FOG, time, loc);
-            else if (id == 800 || id == 801) //Clear
+            else if (condition == 800 || condition == 801) //Clear
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.SUN, time, loc);
-            else if (id > 801) //Cloudy
+            else if (condition > 801) //Cloudy
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.CLOUDS, time, loc);
             else{ //anything else
                 dataline = new DBWeatherInfo(id, temp, condition, WeatherCondition.OTHER, time, loc);
